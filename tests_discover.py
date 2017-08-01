@@ -1,5 +1,6 @@
 import unittest
 import argparse
+import Queue
 
 def __load_tests_from_dir(search_dir):
     assert search_dir
@@ -9,7 +10,30 @@ def __load_tests_from_dir(search_dir):
     return test_suit
 
 def __parse_tests(tests_suit):
+    tests_set = __collect_tests(tests_suit)
+    return __convert_tests(tests_set)
+    
+def __convert_tests(tests_set):
     pass
+
+def __collect_tests(tests_suit):
+    #Breadth-First Search
+    tests_queue = Queue.Queue()
+    tests_queue.put(tests_suit)
+    
+    tests_set = list()
+    while not tests_queue.empty():
+        tests = tests_queue.get()
+        if isinstance(tests, unittest.TestSuite):
+            for test in tests:
+                tests_queue.put(test)
+        elif isinstance(tests, unittest.TestCase):
+            tests_set.append(tests)
+        else:
+            raise ValueError
+
+    return tests_set
+
 def __print_tests_tree(tests_tree, mode, option):
     pass
 
