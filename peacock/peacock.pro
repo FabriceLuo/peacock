@@ -24,6 +24,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    teststree.cpp \
+    peacock.cpp \
+    testsfactory.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    teststree.h \
+    peacock.h \
+    testsfactory.h
