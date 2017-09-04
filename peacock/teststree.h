@@ -27,6 +27,14 @@ private:
     bool  m_check_parent;
     bool  m_check_start;
 
+    TestNode* find_test_node(QTreeWidgetItem *item);
+
+    TestNode* get_test_node(const QStringList &path);
+
+    QStringList get_test_path(QTreeWidgetItem *item);
+
+
+
 signals:
     void leaf_chosen(TestNode *node);
 public slots:

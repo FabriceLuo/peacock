@@ -76,6 +76,74 @@ QTreeWidgetItem *TestsTree::build_tests_tree(TestNode *root, QTreeWidgetItem *pa
     return item;
 }
 
+TestNode *TestsTree::find_test_node(QTreeWidgetItem *item)
+{
+    if (!tests_root || !item)
+    {
+        return NULL;
+    }
+
+    QStringList path = get_test_path(item);
+
+    return get_test_node(path);
+}
+
+TestNode *TestsTree::get_test_node(const QStringList &path)
+{
+    QString root = path.pop_front();
+    if (root != tests_root->name)
+    {
+        return NULL;
+    }
+
+
+    TestNode *p_node = tests_root;
+
+    QStringList::iterator begin = path.begin();
+    QStringList::iterator end = path.end();
+
+    while (begin != end) {
+        if (p_node->type == TEST_NODE_FUNCTION)
+        {
+            if (p_node != begin)
+            {
+                return NULL;
+            }
+        }
+        else
+        {
+            //find node in child
+            QList<TestNode*>::iterator t_begin = p_node->childs.begin();
+            QList<TestNode*>::iterator t_end = p_node->childs.end();
+
+            while (t_begin != t_end) {
+                if ((*t_begin)->name == begin)
+                {
+                    p_node = *t_begin;
+                    break;
+                }
+
+                t_begin++;
+            }
+        }
+
+        begin++;
+    }
+
+    return p_node;
+}
+
+QStringList TestsTree::get_test_path(QTreeWidgetItem *item)
+{
+    QStringList test_path;
+    while(item)
+    {
+        test_path.push_front(item->text(0));
+        item = item->parent();
+    }
+    return test_path;
+}
+
 void TestsTree::export_chosen_leaves(QString path)
 {
 
