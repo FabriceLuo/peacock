@@ -18,6 +18,8 @@ public:
 
     void set_tests_tree(TestNode *root);
     bool display_tree();
+    QList<TestCase> get_selected_tests();
+
 protected:
     QTreeWidgetItem* build_tests_tree(TestNode *root, QTreeWidgetItem *parent);
 private:
@@ -29,16 +31,13 @@ private:
 
     TestNode* find_test_node(QTreeWidgetItem *item);
 
-    TestNode* get_test_node(const QStringList &path);
+    TestNode* get_test_node(QStringList path);
 
     QStringList get_test_path(QTreeWidgetItem *item);
 
-
-
 signals:
-    void leaf_chosen(TestNode *node);
+    void tests_chnaged();
 public slots:
-    void export_chosen_leaves(QString path);
     void select_tests_node(QTreeWidgetItem *item, int column);
 };
 

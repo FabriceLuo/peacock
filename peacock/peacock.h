@@ -23,4 +23,11 @@ struct TestNode{
     QList<TestNode*> childs;
 };
 
+struct TestCase {
+    QString name;
+    QString path;
+    QString desc;
+    QString note;
+};
+
 #endif // PEACOCK_H

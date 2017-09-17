@@ -27,9 +27,11 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     teststree.cpp \
     peacock.cpp \
-    testsfactory.cpp
+    testsfactory.cpp \
+    testsview.cpp
 
 HEADERS  += mainwindow.h \
     teststree.h \
     peacock.h \
-    testsfactory.h
+    testsfactory.h \
+    testsview.h

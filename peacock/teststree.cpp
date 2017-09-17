@@ -38,20 +38,60 @@ bool TestsTree::display_tree()
 
     QTreeWidgetItem *root = build_tests_tree(tests_root, NULL);
 
-    QTreeWidget *tWidget = new QTreeWidget();
+    tests_tree = new QTreeWidget();
 
-    tWidget->setColumnCount(1);
-    tWidget->header()->setHidden(true);
-    tWidget->addTopLevelItem(root);
+    tests_tree->setColumnCount(1);
+    tests_tree->header()->setHidden(true);
+    tests_tree->addTopLevelItem(root);
 
-    connect(tWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(select_tests_node(QTreeWidgetItem*,int)));
+    connect(tests_tree, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(select_tests_node(QTreeWidgetItem*,int)));
 
     QVBoxLayout *tree_layout = new QVBoxLayout();
-    tree_layout->addWidget(tWidget);
+    tree_layout->addWidget(tests_tree);
     setLayout(tree_layout);
-    //connect(tWidget, SIGNAL()
 
     return true;
+}
+
+QList<TestCase> TestsTree::get_selected_tests()
+{
+    QList<TestCase> list;
+    if (!tests_tree)
+    {
+        return list;
+    }
+
+    QList<QTreeWidgetItem*> tests_queue;
+    int count = tests_tree->topLevelItemCount();
+    for(int i = 0;i < count; i++)
+    {
+        tests_queue.append(tests_tree->topLevelItem(i));
+    }
+
+    QTreeWidgetItem *item = NULL;
+    while(tests_queue.count())
+    {
+        item = tests_queue.front();
+        tests_queue.pop_front();
+
+        if (item->childCount() == 0 && item->checkState(0) == Qt::Checked)
+        {
+            TestCase test_case;
+            test_case.name = item->text(0);
+            list.append(test_case);
+
+        }
+        else
+        {
+            int child_count = item->childCount();
+            for (int i = 0; i < child_count; i++)
+            {
+                tests_queue.append(item->child(i));
+            }
+        }
+    }
+
+    return list;
 }
 
 QTreeWidgetItem *TestsTree::build_tests_tree(TestNode *root, QTreeWidgetItem *parent)
@@ -88,9 +128,10 @@ TestNode *TestsTree::find_test_node(QTreeWidgetItem *item)
     return get_test_node(path);
 }
 
-TestNode *TestsTree::get_test_node(const QStringList &path)
+TestNode *TestsTree::get_test_node(QStringList path)
 {
-    QString root = path.pop_front();
+    QString root = path.front();
+    path.pop_front();
     if (root != tests_root->name)
     {
         return NULL;
@@ -105,7 +146,7 @@ TestNode *TestsTree::get_test_node(const QStringList &path)
     while (begin != end) {
         if (p_node->type == TEST_NODE_FUNCTION)
         {
-            if (p_node != begin)
+            if (p_node->name != *begin)
             {
                 return NULL;
             }
@@ -117,7 +158,7 @@ TestNode *TestsTree::get_test_node(const QStringList &path)
             QList<TestNode*>::iterator t_end = p_node->childs.end();
 
             while (t_begin != t_end) {
-                if ((*t_begin)->name == begin)
+                if ((*t_begin)->name == *begin)
                 {
                     p_node = *t_begin;
                     break;
@@ -142,11 +183,6 @@ QStringList TestsTree::get_test_path(QTreeWidgetItem *item)
         item = item->parent();
     }
     return test_path;
-}
-
-void TestsTree::export_chosen_leaves(QString path)
-{
-
 }
 
 void TestsTree::select_tests_node(QTreeWidgetItem *item, int column)
@@ -217,6 +253,8 @@ void TestsTree::select_tests_node(QTreeWidgetItem *item, int column)
         {
             m_check_start = false;
         }
+
+        emit tests_chnaged();
     }
 }
 
